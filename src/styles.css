@@ -6,6 +6,19 @@ body {
   font-family: sans-serif;
   margin: 20px;
   padding: 0;
+  margin: 0;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,0.05), transparent 60%),
+    linear-gradient(#111, #050505);
+
+}
+body, input, p {
+  font-family: 'Merriweather', serif;
+}
+
+#menu{
+  color: white;
+  font-size: 1.5rem;
 }
 
 h1 {
@@ -50,11 +63,6 @@ ul {
   box-sizing: border-box;
 }
 
-body {
-  font-family: sans-serif;
-  margin: 20px;
-  padding: 0;
-}
 
 .square {
   background: #fff;
@@ -106,21 +114,24 @@ body {
   background-repeat: no-repeat;
 }
 
-body {
-  margin: 0;
-  background: #0b0b0b;
-  font-family: system-ui, sans-serif;
+
+.layout {
+  display: flex;
+  flex-direction: column;
 }
 
+@media (min-width: 769px) {
+  .layout {
+    flex-direction: row;
+  }
+}
+
+
 .theater {
-  min-height: 100vh;
+  flex: 1;  
   display: flex;
   align-items: center;
   justify-content: center;
-
-  background:
-    radial-gradient(circle at center, rgba(255,255,255,0.05), transparent 60%),
-    linear-gradient(#111, #050505);
 }
 
 
@@ -135,14 +146,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-
 }
-
-
-
-
-
-
 
 .posterImageContainer {
   width: 400px;
@@ -150,6 +154,23 @@ body {
   border-radius: 6px;
   overflow: hidden;
   position: relative;
+}
+
+.clickCount {
+  color: white;
+  width: 5ch; 
+  display: inline-block;
+  text-align: center;  
+  font-family: 'Courier New', monospace;
+  padding: 0 2px;
+}
+
+header {
+  position: sticky;
+  color: white;
+  font-size: 4rem;
+  text-align: center;
+  font-family: 'Limelight', cursive;
 }
 
 

@@ -8,82 +8,144 @@ function Frame({ squares, onReveal, posterPath, columns }) {
   const height = 600;
   const rows = Math.ceil(squares.length / columns);
 
+  // Regex to check if word contains at least one letter or number
+  const LETTER_NUMBER_REGEX = /[A-Za-z0-9]/;
+
   useEffect(() => {
+    const Tesseract = window.Tesseract;
     const posterCanvas = document.createElement('canvas');
     posterCanvas.width = width;
     posterCanvas.height = height;
     posterCanvasRef.current = posterCanvas;
 
-    const posterCtx = posterCanvas.getContext('2d');
-    const ctx = canvasRef.current.getContext('2d');
+    const posterContext = posterCanvas.getContext('2d');
+    const gridContext = canvasRef.current.getContext('2d');
 
     const img = new Image();
     img.crossOrigin = 'anonymous';
+    img.src = `https://image.tmdb.org/t/p/w400${posterPath}`;
 
-    img.onload = () => {
-      posterCtx.drawImage(img, 0, 0, width, height);
-      ctx.fillStyle = '#141414';
-      ctx.fillRect(0, 0, width, height);
+    img.onload = async () => {
+      posterContext.drawImage(img, 0, 0, width, height);
 
+      try {
+        const { data: { words } } = await Tesseract.recognize(img, 'eng', {
+          logger: (m) => console.log('OCR Progress:', m),
+        });
+
+        words.forEach((word, idx) => {
+          const x0 = word.bbox?.x0 || 0;
+          const y0 = word.bbox?.y0 || 0;
+          const x1 = word.bbox?.x1 || 0;
+          const y1 = word.bbox?.y1 || 0;
+
+          const startX = Math.floor(x0);
+          const startY = Math.floor(y0);
+          const boxWidth = Math.max(Math.floor(x1 - x0), 1);
+          const boxHeight = Math.max(Math.floor(y1 - y0), 1);
+
+          if (isNaN(startX) || isNaN(startY) || boxWidth <= 0 || boxHeight <= 0) {
+            console.warn(`Skipping invalid word bbox`, word.text);
+            return;
+          }
+
+          const text = word.text || '';
+          const conf = word.conf || 0;
+          const containsLetterNumber = LETTER_NUMBER_REGEX.test(text);
+
+          // Skip low confidence or non-letter/number words
+          const shouldSkip = conf < 60 || !containsLetterNumber;
+
+          console.log(
+            `Word ${idx}: "${text}"`,
+            `Confidence: ${conf.toFixed(1)}%`,
+            shouldSkip ? 'SKIPPED' : 'BLURRED',
+            { startX, startY, boxWidth, boxHeight }
+          );
+
+          if (!shouldSkip) {
+            // Sample pixel to fill
+            const sample = posterContext.getImageData(
+              Math.max(startX - 1, 0),
+              Math.max(startY - 1, 0),
+              1,
+              1
+            ).data;
+
+            const fillColor = `rgb(${sample[0]}, ${sample[1]}, ${sample[2]})`;
+            posterContext.fillStyle = fillColor;
+            posterContext.fillRect(startX, startY, boxWidth, boxHeight);
+
+            // Debug: draw red rectangle + word number
+            gridContext.strokeStyle = 'red';
+            gridContext.lineWidth = 2;
+            gridContext.strokeRect(startX, startY, boxWidth, boxHeight);
+
+            gridContext.fillStyle = 'red';
+            gridContext.font = '14px sans-serif';
+            gridContext.fillText(idx + 1, startX + 2, startY + 14);
+          } else {
+            // Debug: skipped word gray box
+            gridContext.strokeStyle = 'rgba(128,128,128,0.4)';
+            gridContext.lineWidth = 1;
+            gridContext.strokeRect(startX, startY, boxWidth, boxHeight);
+          }
+        });
+      } catch (err) {
+        console.error('OCR failed', err);
+      }
+
+      // Draw grid overlay
       const tileW = width / columns;
       const tileH = height / rows;
 
+      gridContext.fillStyle = '#141414';
+      gridContext.fillRect(0, 0, width, height);
+
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < columns; c++) {
-          ctx.fillStyle = (r + c) % 2 === 0 ? '#1a1a1a' : '#161616';
-          ctx.fillRect(c * tileW, r * tileH, tileW, tileH);
-          ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-          ctx.lineWidth = 1;
-          ctx.strokeRect(
-            c * tileW,
-            r * tileH,
-            tileW,
-            tileH
-          );
+          gridContext.fillStyle = (r + c) % 2 === 0 ? '#1a1a1a' : '#161616';
+          gridContext.fillRect(c * tileW, r * tileH, tileW, tileH);
+
+          gridContext.strokeStyle = 'rgba(255,255,255,0.08)';
+          gridContext.lineWidth = 1;
+          gridContext.strokeRect(c * tileW, r * tileH, tileW, tileH);
         }
       }
 
-      ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+      gridContext.strokeStyle = 'rgba(255,255,255,0.04)';
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < columns; c++) {
-          ctx.strokeRect(
-            c * tileW + 0.5,
-            r * tileH + 0.5,
-            tileW - 1,
-            tileH - 1
-          );
+          gridContext.strokeRect(c * tileW + 0.5, r * tileH + 0.5, tileW - 1, tileH - 1);
         }
       }
-
-      img.src = '';
     };
-
-    img.src = `https://image.tmdb.org/t/p/w400${posterPath}`;
   }, [posterPath]);
 
-
+  // Update revealed squares
   useEffect(() => {
-    const ctx = canvasRef.current.getContext('2d');
-    const posterCtx = posterCanvasRef.current.getContext('2d');
+    const gridContext = canvasRef.current.getContext('2d');
+    const posterCanvas = posterCanvasRef.current;
+    if (!posterCanvas) return;
 
-    const tileW = width / columns;
-    const tileH = height / rows;
+    const squareWidth = width / columns;
+    const squareHeight = height / rows;
 
     squares.forEach((hidden, index) => {
       if (!hidden) {
         const row = Math.floor(index / columns);
         const col = index % columns;
 
-        ctx.drawImage(
-          posterCanvasRef.current,
-          col * tileW,
-          row * tileH,
-          tileW,
-          tileH,
-          col * tileW,
-          row * tileH,
-          tileW,
-          tileH
+        gridContext.drawImage(
+          posterCanvas,
+          col * squareWidth,
+          row * squareHeight,
+          squareWidth,
+          squareHeight,
+          col * squareWidth,
+          row * squareHeight,
+          squareWidth,
+          squareHeight
         );
       }
     });
