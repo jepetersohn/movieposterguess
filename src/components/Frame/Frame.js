@@ -8,11 +8,11 @@ function Frame({ squares, onReveal, posterPath, columns }) {
   const height = 600;
   const rows = Math.ceil(squares.length / columns);
 
-  // Regex to check if word contains at least one letter or number
-  const LETTER_NUMBER_REGEX = /[A-Za-z0-9]/;
+  // const LETTER_NUMBER_REGEX = /[A-Za-z0-9]/;
 
   useEffect(() => {
-    const Tesseract = window.Tesseract;
+    // const Tesseract = window.Tesseract;
+
     const posterCanvas = document.createElement('canvas');
     posterCanvas.width = width;
     posterCanvas.height = height;
@@ -21,12 +21,16 @@ function Frame({ squares, onReveal, posterPath, columns }) {
     const posterContext = posterCanvas.getContext('2d');
     const gridContext = canvasRef.current.getContext('2d');
 
+    // Load poster image
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.src = `https://image.tmdb.org/t/p/w400${posterPath}`;
 
     img.onload = async () => {
       posterContext.drawImage(img, 0, 0, width, height);
+
+      /*
+      //tesseract debugging
 
       try {
         const { data: { words } } = await Tesseract.recognize(img, 'eng', {
@@ -44,27 +48,14 @@ function Frame({ squares, onReveal, posterPath, columns }) {
           const boxWidth = Math.max(Math.floor(x1 - x0), 1);
           const boxHeight = Math.max(Math.floor(y1 - y0), 1);
 
-          if (isNaN(startX) || isNaN(startY) || boxWidth <= 0 || boxHeight <= 0) {
-            console.warn(`Skipping invalid word bbox`, word.text);
-            return;
-          }
+          if (isNaN(startX) || isNaN(startY)) return;
 
           const text = word.text || '';
           const conf = word.conf || 0;
           const containsLetterNumber = LETTER_NUMBER_REGEX.test(text);
-
-          // Skip low confidence or non-letter/number words
           const shouldSkip = conf < 60 || !containsLetterNumber;
 
-          console.log(
-            `Word ${idx}: "${text}"`,
-            `Confidence: ${conf.toFixed(1)}%`,
-            shouldSkip ? 'SKIPPED' : 'BLURRED',
-            { startX, startY, boxWidth, boxHeight }
-          );
-
           if (!shouldSkip) {
-            // Sample pixel to fill
             const sample = posterContext.getImageData(
               Math.max(startX - 1, 0),
               Math.max(startY - 1, 0),
@@ -72,30 +63,20 @@ function Frame({ squares, onReveal, posterPath, columns }) {
               1
             ).data;
 
-            const fillColor = `rgb(${sample[0]}, ${sample[1]}, ${sample[2]})`;
-            posterContext.fillStyle = fillColor;
+            posterContext.fillStyle = `rgb(${sample[0]}, ${sample[1]}, ${sample[2]})`;
             posterContext.fillRect(startX, startY, boxWidth, boxHeight);
 
-            // Debug: draw red rectangle + word number
+            // Debug boxes
             gridContext.strokeStyle = 'red';
             gridContext.lineWidth = 2;
-            gridContext.strokeRect(startX, startY, boxWidth, boxHeight);
-
-            gridContext.fillStyle = 'red';
-            gridContext.font = '14px sans-serif';
-            gridContext.fillText(idx + 1, startX + 2, startY + 14);
-          } else {
-            // Debug: skipped word gray box
-            gridContext.strokeStyle = 'rgba(128,128,128,0.4)';
-            gridContext.lineWidth = 1;
             gridContext.strokeRect(startX, startY, boxWidth, boxHeight);
           }
         });
       } catch (err) {
         console.error('OCR failed', err);
       }
+      */
 
-      // Draw grid overlay
       const tileW = width / columns;
       const tileH = height / rows;
 
@@ -104,25 +85,32 @@ function Frame({ squares, onReveal, posterPath, columns }) {
 
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < columns; c++) {
-          gridContext.fillStyle = (r + c) % 2 === 0 ? '#1a1a1a' : '#161616';
+          gridContext.fillStyle = (r + c) % 2 === 0
+            ? getComputedStyle(document.documentElement)
+            .getPropertyValue('--tile-dark')
+          : getComputedStyle(document.documentElement)
+            .getPropertyValue('--tile-light');
           gridContext.fillRect(c * tileW, r * tileH, tileW, tileH);
-
-          gridContext.strokeStyle = 'rgba(255,255,255,0.08)';
+          gridContext.strokeStyle = 'rgba(255,255,255,.12)';
           gridContext.lineWidth = 1;
           gridContext.strokeRect(c * tileW, r * tileH, tileW, tileH);
         }
       }
 
-      gridContext.strokeStyle = 'rgba(255,255,255,0.04)';
+      gridContext.strokeStyle = 'rgba(255,255,255,0.06)';
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < columns; c++) {
-          gridContext.strokeRect(c * tileW + 0.5, r * tileH + 0.5, tileW - 1, tileH - 1);
+          gridContext.strokeRect(
+            c * tileW + 0.5,
+            r * tileH + 0.5,
+            tileW - 1,
+            tileH - 1
+          );
         }
       }
     };
   }, [posterPath]);
 
-  // Update revealed squares
   useEffect(() => {
     const gridContext = canvasRef.current.getContext('2d');
     const posterCanvas = posterCanvasRef.current;
