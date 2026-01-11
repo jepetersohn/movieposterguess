@@ -25,6 +25,7 @@ function Frame({ squares, onReveal, posterPath, columns }) {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.src = `https://image.tmdb.org/t/p/w400${posterPath}`;
+    img.alt = "Hidden movie poster";
 
     img.onload = async () => {
       posterContext.drawImage(img, 0, 0, width, height);

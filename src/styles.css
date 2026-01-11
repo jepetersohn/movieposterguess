@@ -120,13 +120,35 @@ h6 {
   padding: 0 2px;
 }
 
+.top-buttons{
+  display:flex;
+  flex-direction: row;
+}
 
+.win-message {
+  font-size: 1.5rem;
+  color: #00fff0;
+  text-shadow: 0 0 8px #00fff0;
+  animation: popIn 0.4s ease-out;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 .theater {
   flex: 1;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
 }
 
 .posterImageContainer {

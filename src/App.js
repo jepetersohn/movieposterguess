@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Frame from './components/Frame/Frame';
+import GuessInput from './components/Input/GuessInput';
 import { getRandomPopularMovie } from './api/tmdb';
 
 export default function Game() {
@@ -10,22 +11,57 @@ export default function Game() {
   const [squares, setSquares] = useState(
     Array(GRID_COLUMNS * GRID_ROWS).fill(true)
   );
-  /*const [revealedCount, setrevealedCount] = useState(0);*/
+
   const hiddenTiles = squares.filter(tile => tile === true);
   const hiddenTileCount = hiddenTiles.length;
 
-  useEffect(() => {
-    async function loadMovie() {
-      const randomMovie = await getRandomPopularMovie();
-      setMovie(randomMovie);
+  const [gameWon, setGameWon] = useState(false);
+
+  function normalizeTitle(title) {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9 ]/g, "")
+      .trim();
+  }
+
+  function simpleHash(str) {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = (hash << 5) - hash + str.charCodeAt(i);
+      hash |= 0; // convert to 32-bit int
     }
+    return hash;
+  }
+
+   async function loadMovie() {
+      const randomMovie = await getRandomPopularMovie();
+      const normalizedTitle = normalizeTitle(randomMovie.title);
+      const titleHash = simpleHash(normalizedTitle);
+      setMovie({...randomMovie, answerHash: titleHash});
+    }
+
+  useEffect(() => {
+   
     loadMovie();
   }, []);
 
   function handleReveal(index) {
+    if (gameWon) return;
+
     setSquares(aPrevSquares =>
       aPrevSquares.map((oSquare, i) => (i === index ? false : oSquare))
     );
+  }
+
+  function onCorrect() {
+    setGameWon(true);
+    setSquares(Array(GRID_COLUMNS * GRID_ROWS).fill(false));
+  }
+
+  function resetGameBoard() {
+    setSquares(Array(GRID_COLUMNS * GRID_ROWS).fill(true));
+    setGameWon(false);
+    loadMovie();
   }
 
   if (!movie) return <div>Loading…</div>;
@@ -52,22 +88,37 @@ export default function Game() {
             <br/><br/>To still be added:
           </p>
           <ul>
+            <li><s>Input for guesses.</s></li>
             <li>Left slide-out panel for input settings (difficulty, genre request, etc.)</li>
-            <li>Input at the bottom of the frame for guesses.</li>
             <li>Leaderboard</li>
             <li>AI usage to recognize and blur out text on posters (for increased difficulty)</li>
-            <li>Accessibility updates (keyboard navigation/playability, screen reader consideration, etc.)</li>
+            <li>Accessibility updates (keyboard navigation/playability, etc.)</li>
             <li>Prettier UI</li>
           </ul>
         </section>
       </div>
       <section className="theater" aria-label="Game board">
+        <div className="top-buttons">
+          {gameWon ? (
+            <div className="win-message" role="status" aria-live="polite">
+              You win!
+            </div>
+            ) : (
+            <GuessInput
+              disabled={gameWon}
+              answerHash={movie.answerHash}
+              onCorrect={onCorrect}
+            />
+          )}
+          <button onClick={resetGameBoard}>New Movie</button>
+        </div>
         <Frame
           squares={squares}
           onReveal={handleReveal}
           posterPath={movie.poster_path}
           columns={GRID_COLUMNS}
         />
+        
       </section>
     </main>
   </>
