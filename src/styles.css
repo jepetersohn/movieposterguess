@@ -101,6 +101,7 @@ h6 {
 
   .sidebar {
     max-width: none;
+    flex-direction: column-reverse;
   }
 }
 
@@ -206,4 +207,66 @@ h6 {
 
 .game-info {
   margin-left: 20px;
+}
+
+.DrawerContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100%;
+  background: white;
+  transition: transform 0.3s ease; /* smooth slide */
+}
+
+.DrawerContainer.closed {
+  transform: translateX(-100%);
+}
+
+.DrawerContainer.open {
+  transform: translateX(0);
+}
+
+.noirBtn {
+  background: linear-gradient(145deg, #111111, #2a2a2a);
+  color: #f0f0f0;
+  border: 2px solid #f0f0f0;
+  padding: 10px 22px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+  margin: 5px;
+}
+
+.noirBtn:hover {
+  background: linear-gradient(145deg, #2a2a2a, #111111);
+  color: #fffbf0;
+  border-color: #fffbf0;
+  box-shadow: 4px 4px 12px rgba(0,0,0,0.8);
+}
+
+.noirBtn.inProgress {
+  background-color: #ff4d4f;
+  color: #fff;
+  border: 2px solid #ff7875;
+  font-weight: bold;
+  text-transform: uppercase;
+  box-shadow: 0 4px 8px rgba(255, 77, 79, 0.4);
+  transition: box-shadow 0.2s ease;
+}
+
+.noirBtn.inProgress:hover {
+  box-shadow: 0 6px 12px rgba(255, 77, 79, 0.5);
+}
+
+.DrawerContainer {
+  padding: 15px;
+}
+
+#actions {
+  text-align: center;
 }

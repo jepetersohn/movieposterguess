@@ -1,13 +1,25 @@
 import { useEffect, useState } from 'react';
 import Frame from './components/Frame/Frame';
 import GuessInput from './components/Input/GuessInput';
+import Drawer from './components/Drawer/Drawer';
+import DifficultyControls from './components/DifficultyControls/DifficultyControls';
 import { getRandomPopularMovie } from './api/tmdb';
 
 export default function Game() {
-  const GRID_COLUMNS = 12;
-  const GRID_ROWS = 18;
 
+
+  const [difficulty, setDifficulty] = useState("hard");
+  const [preferencesDrawer, setPreferencesDrawer] = useState(false);
+  const [progressDrawer, setProgressDrawer] = useState(false);
   const [movie, setMovie] = useState(null);
+  const gridSize = {
+    easy: { columns: 10, rows: 12 },
+    medium: { columns: 14, rows: 16 },
+    hard: { columns: 17, rows: 19 }
+  }[difficulty];
+
+  let { columns: GRID_COLUMNS, rows: GRID_ROWS } = gridSize;
+
   const [squares, setSquares] = useState(
     Array(GRID_COLUMNS * GRID_ROWS).fill(true)
   );
@@ -16,7 +28,9 @@ export default function Game() {
   const hiddenTileCount = hiddenTiles.length;
 
   const [gameWon, setGameWon] = useState(false);
-
+useEffect(() => {
+  setSquares(Array(GRID_COLUMNS * GRID_ROWS).fill(true));
+}, [GRID_COLUMNS, GRID_ROWS]);
   function normalizeTitle(title) {
     return title
       .toLowerCase()
@@ -28,7 +42,7 @@ export default function Game() {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       hash = (hash << 5) - hash + str.charCodeAt(i);
-      hash |= 0; // convert to 32-bit int
+      hash |= 0;
     }
     return hash;
   }
@@ -53,6 +67,13 @@ export default function Game() {
     );
   }
 
+  function openPreferencesDrawer(){
+    setPreferencesDrawer(true);
+  }
+  function openProgressDrawer(){
+    setProgressDrawer(true);
+  }
+
   function onCorrect() {
     setGameWon(true);
     setSquares(Array(GRID_COLUMNS * GRID_ROWS).fill(false));
@@ -64,19 +85,23 @@ export default function Game() {
     loadMovie();
   }
 
+  function onDifficultyChange(newDifficulty){
+    setDifficulty(newDifficulty)
+  }
+
+  useEffect(() => { setSquares(Array(GRID_COLUMNS * GRID_ROWS).fill(true)); }, [difficulty, GRID_COLUMNS, GRID_ROWS]);
+
   if (!movie) return <div>Loading…</div>;
 
   return (
     <>
     <header>Cinema Undercover</header>
     <main className="layout">
-      <div className="sidebar">
-        <section id="menu" aria-labelledby="scoreboard-heading">
-          <h2 id="scoreboard-heading">Scoreboard</h2>
-            Hidden Tiles:
-            <span className="clickCount">{hiddenTileCount}</span>
-        </section>
-        <section id="coming-soon" aria-labelledby="coming-soon-heading">
+      <Drawer open={preferencesDrawer} onClose={() => setPreferencesDrawer(false)}>
+         <DifficultyControls value={difficulty} onChange={onDifficultyChange} />
+      </Drawer>
+       <Drawer open={progressDrawer} onClose={() => setProgressDrawer(false)}>
+          <section id="coming-soon" aria-labelledby="coming-soon-heading">
           <h2 id="coming-soon-heading">A Work in Progress - Keep checking back!</h2>
           <p>
             This is the current project that I'm actively working on in my free time. 
@@ -89,12 +114,23 @@ export default function Game() {
           </p>
           <ul>
             <li><s>Input for guesses.</s></li>
-            <li>Left slide-out panel for input settings (difficulty, genre request, etc.)</li>
-            <li>Leaderboard</li>
+            <li><s>Left slide-out panel for input settings</s></li>
+            <li>More extensive preference options (genre, actor, etc.)</li>
             <li>AI usage to recognize and blur out text on posters (for increased difficulty)</li>
             <li>Accessibility updates (keyboard navigation/playability, etc.)</li>
             <li>Prettier UI</li>
           </ul>
+        </section>
+        </Drawer>
+      <div className="sidebar">
+        <section id="actions">
+          <button className="noirBtn inProgress" onClick={openProgressDrawer}>This project is IN PROGRESS.<br/> Learn more.</button>
+          <button className="noirBtn" onClick={openPreferencesDrawer}>Game Preferences</button><br/>
+        </section>
+        <section id="menu" aria-labelledby="scoreboard-heading">
+          <h2 id="scoreboard-heading">Scoreboard</h2>
+            Hidden Tiles:
+            <span className="clickCount">{hiddenTileCount}</span>
         </section>
       </div>
       <section className="theater" aria-label="Game board">
@@ -110,13 +146,14 @@ export default function Game() {
               onCorrect={onCorrect}
             />
           )}
-          <button onClick={resetGameBoard}>New Movie</button>
+          <button className="noirBtn" onClick={resetGameBoard}>New Movie</button>
         </div>
         <Frame
           squares={squares}
           onReveal={handleReveal}
           posterPath={movie.poster_path}
           columns={GRID_COLUMNS}
+          rows={GRID_ROWS}
         />
         
       </section>

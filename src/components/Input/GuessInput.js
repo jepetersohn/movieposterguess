@@ -41,7 +41,7 @@ export default function GuessInput({ answerHash, onCorrect }) {
         onChange={e => setGuess(e.target.value)}
         placeholder="Guess the movie…"
       />
-      <button type="submit">Guess</button>
+      <button className="noirBtn" type="submit">Guess</button>
     </form>
   );
 }
