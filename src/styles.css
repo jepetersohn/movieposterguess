@@ -23,6 +23,21 @@ p {
   font-family: 'Merriweather', serif;
 }
 
+input {
+  background: #ffffff;
+    font-size
+: 15px;
+    padding: 9px;
+    border: 1px solid #e3e3e3;
+    -webkit-flex: 1 0 auto;
+    -ms-flex: 1 0 auto;
+    flex: 1 0 auto;
+    line-height: 1.4;
+    margin: 0;
+    -webkit-transition: border-color ease-out 300ms;
+    transition: border-color ease-out 300ms;
+}
+
 :focus-visible {
   outline: 3px solid #f5c542;
   outline-offset: 3px;
@@ -127,11 +142,6 @@ h6 {
   text-align: center;
   font-family: 'Courier New', monospace;
   padding: 0 2px;
-}
-
-.top-buttons{
-  display:flex;
-  flex-direction: row;
 }
 
 .win-message {
@@ -250,6 +260,10 @@ h6 {
   margin: 5px;
 }
 
+.noirBtn.newMovie {
+  margin-left: -5px;
+}
+
 .noirBtn:hover {
   background: linear-gradient(145deg, #2a2a2a, #111111);
   color: #fffbf0;
@@ -297,4 +311,44 @@ h6 {
     outline-offset: -2px;
     opacity: 0.1 !important;
     background-color: #f5c542 !important;
+}
+
+.top-buttons {
+  display: flex;
+  align-items: center;
+  gap: 1rem; 
+  position: relative;
+}
+
+.feedback-container {
+  position: absolute;
+  top: -1.5rem; 
+  left: 0;
+  width: 100%;
+  height: 1.2rem; 
+  color: #f5c542;
+  font-weight: bold;
+  pointer-events: none; 
+  user-select: none; 
+}
+
+.controls-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  flex-wrap: nowrap;      /* NEVER stack */
+  width: 100%;
+}
+
+/* Guess input: allowed to grow, but not push button away */
+.controls-row input {
+  flex: 1 1 auto;
+  min-width: 0;           /* critical for flex overflow */
+}
+
+/* New Movie button: fixed size */
+.controls-row .noirBtn {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }

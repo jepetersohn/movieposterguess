@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function GuessInput({ answerHash, onCorrect }) {
+export default function GuessInput({ answerHash, onCorrect, disabled, feedback, setFeedback }) {
   const [guess, setGuess] = useState("");
 
   function normalizeTitle(title) {
@@ -26,8 +26,9 @@ export default function GuessInput({ answerHash, onCorrect }) {
 
     if (guessHash === answerHash) {
       onCorrect();
+      setFeedback(""); // clear feedback on success
     } else {
-      alert("Try again!");
+      setFeedback("Sorry, try again!"); // show feedback on failure
     }
 
     setGuess("");
@@ -36,12 +37,17 @@ export default function GuessInput({ answerHash, onCorrect }) {
   return (
     <form onSubmit={handleSubmit}>
       <input
+        disabled={disabled}
         type="text"
         value={guess}
         onChange={e => setGuess(e.target.value)}
         placeholder="Guess the movie…"
+        aria-label="Movie guess input"
+        autoComplete="off"
       />
-      <button className="noirBtn" type="submit">Guess</button>
+      <button className="noirBtn" type="submit" disabled={disabled}>
+        Guess
+      </button>
     </form>
   );
 }
