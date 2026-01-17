@@ -17,7 +17,7 @@ function Drawer({ open, onClose, children }) {
     }, [open]);
 
 useEffect(() => {
-  const root = document.getElementById('root'); // or main content wrapper
+  const root = document.getElementById('root');
   if (!root) return;
 
   if (open) {

@@ -3,7 +3,7 @@ import Frame from './components/Frame/Frame';
 import GuessInput from './components/Input/GuessInput';
 import Drawer from './components/Drawer/Drawer';
 import DifficultyControls from './components/DifficultyControls/DifficultyControls';
-import { getRandomPopularMovie } from './api/tmdb';
+import { getRandomMovie } from './api/tmdb';
 
 export default function Game() {
   const [difficulty, setDifficulty] = useState("hard");
@@ -50,7 +50,7 @@ export default function Game() {
   }
 
   async function loadMovie() {
-    const randomMovie = await getRandomPopularMovie();
+    const randomMovie = await getRandomMovie();
     const normalizedTitle = normalizeTitle(randomMovie.title);
     const titleHash = simpleHash(normalizedTitle);
     setMovie({ ...randomMovie, answerHash: titleHash });
