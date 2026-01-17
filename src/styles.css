@@ -118,6 +118,12 @@ h6 {
   line-height: 1.5;
 }
 
+@media (max-width: 1200px) {
+   .controls-row {
+    flex-direction : column;
+  }
+}
+
 @media (max-width: 768px) {
   .layout {
     flex-direction: column;
