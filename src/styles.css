@@ -337,17 +337,15 @@ h6 {
   align-items: center;
   gap: 0.5rem;
 
-  flex-wrap: nowrap;      /* NEVER stack */
+  flex-wrap: nowrap;    
   width: 100%;
 }
 
-/* Guess input: allowed to grow, but not push button away */
 .controls-row input {
   flex: 1 1 auto;
-  min-width: 0;           /* critical for flex overflow */
+  min-width: 0;          
 }
 
-/* New Movie button: fixed size */
 .controls-row .noirBtn {
   flex: 0 0 auto;
   white-space: nowrap;

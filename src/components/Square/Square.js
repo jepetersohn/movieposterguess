@@ -7,7 +7,7 @@ export default function Square({ hidden, onClick }) {
       onClick={onClick}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault(); // prevent scrolling for Space
+          e.preventDefault();
           onClick();
         }
       }}

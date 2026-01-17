@@ -10,7 +10,7 @@ export default function Game() {
   const [preferencesDrawer, setPreferencesDrawer] = useState(false);
   const [progressDrawer, setProgressDrawer] = useState(false);
   const [movie, setMovie] = useState(null);
-  const [feedback, setFeedback] = useState("");  // New feedback state
+  const [feedback, setFeedback] = useState(""); 
 
   const gridSize = {
     easy: { columns: 10, rows: 12 },
@@ -79,7 +79,7 @@ export default function Game() {
   function onCorrect() {
     setGameWon(true);
     setSquares(Array(GRID_COLUMNS * GRID_ROWS).fill(false));
-    setFeedback(""); // Clear feedback on correct guess
+    setFeedback("");
   }
 
   function resetGameBoard() {
@@ -150,7 +150,6 @@ export default function Game() {
     gap: '0.5rem'
   }}
 >
-  {/* Feedback / win message */}
   {gameWon ? (
     <div className="win-message" role="status" aria-live="polite">
       You win!
@@ -187,7 +186,6 @@ export default function Game() {
     </button>
   </div>
 </div>
-
 
           <Frame
             squares={squares}

@@ -94,7 +94,6 @@ function Frame({ squares, onReveal, posterPath, columns, rows }) {
         height={height}
         className="posterCanvas"
       />
-      {/* Overlay transparent buttons for keyboard interaction */}
      { squares.map((hidden, index) => {
     const row = Math.floor(index / columns);
     const col = index % columns;

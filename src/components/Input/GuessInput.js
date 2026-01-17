@@ -26,9 +26,9 @@ export default function GuessInput({ answerHash, onCorrect, disabled, feedback, 
 
     if (guessHash === answerHash) {
       onCorrect();
-      setFeedback(""); // clear feedback on success
+      setFeedback("");
     } else {
-      setFeedback("Sorry, try again!"); // show feedback on failure
+      setFeedback("Sorry, try again!");
     }
 
     setGuess("");
