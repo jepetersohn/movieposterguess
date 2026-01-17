@@ -5,6 +5,15 @@ export default function Square({ hidden, onClick }) {
     <button
       className={`square ${hidden ? '' : 'revealed'}`}
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault(); // prevent scrolling for Space
+          onClick();
+        }
+      }}
+      aria-pressed={!hidden}
+      aria-label={hidden ? 'Hidden tile' : 'Revealed tile'}
     />
   );
 }
+

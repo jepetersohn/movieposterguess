@@ -8,8 +8,6 @@ function Frame({ squares, onReveal, posterPath, columns, rows }) {
   const height = 600;
 
   useEffect(() => {
-    if (!columns || !rows) return;
-
     const posterCanvas = document.createElement('canvas');
     posterCanvas.width = width;
     posterCanvas.height = height;
@@ -21,7 +19,7 @@ function Frame({ squares, onReveal, posterPath, columns, rows }) {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.src = `https://image.tmdb.org/t/p/w400${posterPath}`;
-    img.alt = "Hidden movie poster";
+    img.alt = 'Hidden movie poster';
 
     img.onload = () => {
       posterContext.drawImage(img, 0, 0, width, height);
@@ -34,34 +32,24 @@ function Frame({ squares, onReveal, posterPath, columns, rows }) {
 
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < columns; c++) {
-          gridContext.fillStyle = (r + c) % 2 === 0
-            ? getComputedStyle(document.documentElement).getPropertyValue('--tile-dark')
-            : getComputedStyle(document.documentElement).getPropertyValue('--tile-light');
+          gridContext.fillStyle =
+            (r + c) % 2 === 0
+              ? getComputedStyle(document.documentElement).getPropertyValue(
+                  '--tile-dark'
+                )
+              : getComputedStyle(document.documentElement).getPropertyValue(
+                  '--tile-light'
+                );
           gridContext.fillRect(c * tileW, r * tileH, tileW, tileH);
-
           gridContext.strokeStyle = 'rgba(255,255,255,.12)';
           gridContext.lineWidth = 1;
           gridContext.strokeRect(c * tileW, r * tileH, tileW, tileH);
-        }
-      }
-
-      gridContext.strokeStyle = 'rgba(255,255,255,0.06)';
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < columns; c++) {
-          gridContext.strokeRect(
-            c * tileW + 0.5,
-            r * tileH + 0.5,
-            tileW - 1,
-            tileH - 1
-          );
         }
       }
     };
   }, [posterPath, columns, rows]);
 
   useEffect(() => {
-    if (!columns || !rows) return;
-
     const gridContext = canvasRef.current.getContext('2d');
     const posterCanvas = posterCanvasRef.current;
     if (!posterCanvas) return;
@@ -89,26 +77,59 @@ function Frame({ squares, onReveal, posterPath, columns, rows }) {
     });
   }, [squares, columns, rows]);
 
+  const tileW = width / columns;
+  const tileH = height / rows;
+
   return (
-    <canvas
-      ref={canvasRef}
-      width={width}
-      height={height}
-      className="posterCanvas"
-      onClick={(e) => {
-        if (!columns || !rows) return;
-
-        const rect = e.target.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        const col = Math.floor((x / width) * columns);
-        const row = Math.floor((y / height) * rows);
-        const index = row * columns + col;
-
-        onReveal(index);
+    <div
+      style={{
+        position: 'relative',
+        width,
+        height,
       }}
-    />
+    >
+      <canvas
+        ref={canvasRef}
+        width={width}
+        height={height}
+        className="posterCanvas"
+      />
+      {/* Overlay transparent buttons for keyboard interaction */}
+     { squares.map((hidden, index) => {
+    const row = Math.floor(index / columns);
+    const col = index % columns;
+
+    return (
+        <button
+            key={index}
+            onClick={() => onReveal(index)}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onReveal(index);
+                }
+            }}
+            style={{
+                position: 'absolute',
+                top: row * tileH,
+                left: col * tileW,
+                width: tileW,
+                height: tileH,
+                opacity: 0,
+                border: 'none',
+                padding: 0,
+                margin: 0,
+                background: 'transparent',
+                cursor: 'pointer',
+            }}
+            tabIndex={0}
+            aria-label={`Tile ${row + 1}, ${col + 1}`}
+            className="tileButton"
+        />
+    );
+})}
+
+    </div>
   );
 }
 

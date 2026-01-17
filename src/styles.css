@@ -291,3 +291,10 @@ h6 {
   border: none;
   background: transparent;
 }
+
+.tileButton:focus {
+    outline: 2px solid #f5c542; 
+    outline-offset: -2px;
+    opacity: 0.1 !important;
+    background-color: #f5c542 !important;
+}
