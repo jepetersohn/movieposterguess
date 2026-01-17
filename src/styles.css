@@ -28,6 +28,11 @@ p {
   outline-offset: 3px;
 }
 
+.closeBtn:focus {
+  outline: 3px solid #f5c542;
+  outline-offset: 3px;
+}
+
 ul {
   padding-inline-start: 20px;
 }
@@ -53,6 +58,10 @@ h1 {
 h2 {
   margin-top: 0;
   font-size: 20px;
+}
+
+.DrawerContainer h2 {
+  margin-top: 20px;
 }
 
 h3 {
@@ -101,7 +110,6 @@ h6 {
 
   .sidebar {
     max-width: none;
-    flex-direction: column-reverse;
   }
 }
 
@@ -269,4 +277,17 @@ h6 {
 
 #actions {
   text-align: center;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 0;
+  right: 7px;
+  font-size: 36px;
+  margin-left: 50px;
+  text-decoration: none;
+  display: block;
+  transition: 0.3s;
+  border: none;
+  background: transparent;
 }
