@@ -16,7 +16,7 @@ export default function Game() {
   const [gameWon, setGameWon] = useState(false);
   const [gaveUp, setGaveUp] = useState(false);
   const [tileClicks, setTileClicks] = useState(0);
-  const [guesses, setGuesses] = useState([]); // stores {text, correct}
+  const [guesses, setGuesses] = useState([]); 
 
   const loaders = {
     movie: getRandomMovie,
@@ -31,12 +31,10 @@ export default function Game() {
 
   const { columns: GRID_COLUMNS, rows: GRID_ROWS } = gridSize;
 
-  // Initialize squares
   useEffect(() => {
     setSquares(Array(GRID_COLUMNS * GRID_ROWS).fill(true));
   }, [GRID_COLUMNS, GRID_ROWS]);
 
-  // Normalize for hashing
   function normalizeTitle(title) {
     return title.toLowerCase().replace(/[^a-z0-9 ]/g, "").trim();
   }
@@ -50,7 +48,6 @@ export default function Game() {
     return hash;
   }
 
-  // Load movie or actor
   async function loadHiddenPicture() {
     const loader = loaders[type];
     if (!loader) return;
@@ -67,7 +64,6 @@ export default function Game() {
       answerHash,
     });
 
-    // Reset board state
     setSquares(Array(GRID_COLUMNS * GRID_ROWS).fill(true));
     setGameWon(false);
     setFeedback("");
@@ -78,12 +74,10 @@ export default function Game() {
 
   const [rulesOpen, setRulesOpen] = useState(false);
 
-  // Load on mount and when type changes
   useEffect(() => {
     loadHiddenPicture();
   }, [type]);
 
-  // Handle tile reveal
   function handleReveal(index) {
     if (gameWon) return;
 
@@ -93,7 +87,6 @@ export default function Game() {
     setTileClicks((prev) => prev + 1);
   }
 
-  // Game actions
   function onCorrect() {
     setGameWon(true);
     setSquares(Array(GRID_COLUMNS * GRID_ROWS).fill(false));
@@ -111,7 +104,6 @@ export default function Game() {
     setGameWon(true);
     setSquares(Array(GRID_COLUMNS * GRID_ROWS).fill(false));
     setFeedback("");
-    // add correct answer to guesses if not already guessed
     if (!guesses.some((g) => g.text === item.displayTitle)) {
       setGuesses((prev) => [...prev, { text: item.displayTitle, correct: false }]);
     }

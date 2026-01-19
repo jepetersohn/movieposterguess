@@ -7,7 +7,7 @@ export default function GuessInput({
   disabled,
   feedback,
   setFeedback,
-  type, // "movie" or "actor"
+  type,
 }) {
   const [guess, setGuess] = useState("");
 
@@ -32,7 +32,6 @@ export default function GuessInput({
     const guessHash = simpleHash(normalizeTitle(guess));
     const isCorrect = guessHash === answerHash;
 
-    // Call parent to log the guess
     if (onGuess) {
       onGuess(guess, isCorrect);
     }
