@@ -1,13 +1,18 @@
 import { useState } from "react";
 
-export default function GuessInput({ answerHash, onCorrect, disabled, feedback, setFeedback }) {
+export default function GuessInput({
+  answerHash,
+  onCorrect,
+  onGuess,
+  disabled,
+  feedback,
+  setFeedback,
+  type, // "movie" or "actor"
+}) {
   const [guess, setGuess] = useState("");
 
   function normalizeTitle(title) {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9 ]/g, "")
-      .trim();
+    return title.toLowerCase().replace(/[^a-z0-9 ]/g, "").trim();
   }
 
   function simpleHash(str) {
@@ -22,9 +27,17 @@ export default function GuessInput({ answerHash, onCorrect, disabled, feedback, 
   function handleSubmit(e) {
     e.preventDefault();
 
-    const guessHash = simpleHash(normalizeTitle(guess));
+    if (!guess.trim()) return;
 
-    if (guessHash === answerHash) {
+    const guessHash = simpleHash(normalizeTitle(guess));
+    const isCorrect = guessHash === answerHash;
+
+    // Call parent to log the guess
+    if (onGuess) {
+      onGuess(guess, isCorrect);
+    }
+
+    if (isCorrect) {
       onCorrect();
       setFeedback("");
     } else {
@@ -35,15 +48,16 @@ export default function GuessInput({ answerHash, onCorrect, disabled, feedback, 
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} style={{ display: "flex", gap: "0.5rem", width: "100%" }}>
       <input
         disabled={disabled}
         type="text"
         value={guess}
-        onChange={e => setGuess(e.target.value)}
-        placeholder="Guess the movie…"
-        aria-label="Movie guess input"
+        onChange={(e) => setGuess(e.target.value)}
+        placeholder={type === "actor" ? "Guess the actor…" : "Guess the movie…"}
+        aria-label={type === "actor" ? "Actor guess input" : "Movie guess input"}
         autoComplete="off"
+        style={{ flex: 1 }}
       />
       <button className="noirBtn" type="submit" disabled={disabled}>
         Guess

@@ -4,7 +4,7 @@ function DifficultyControls({value, onChange}) {
 
     return(
        
-        <div>
+        <div className="drawerBlock">
       <h3>Difficulty Level:</h3>
       <div>
         <input
@@ -38,7 +38,6 @@ function DifficultyControls({value, onChange}) {
         />
         <label htmlFor="option3">Hard</label>
       </div>
-      <p>Selected option: {value}</p>
     </div>
     )
 }

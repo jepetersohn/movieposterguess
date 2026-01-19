@@ -81,7 +81,7 @@ function Frame({ squares, onReveal, posterPath, columns, rows }) {
   const tileH = height / rows;
 
   return (
-    <div
+    <div className="noirFrame"
       style={{
         position: 'relative',
         width,

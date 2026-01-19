@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/projects/cinemaUndercover/static/css/main.6f1a0277.css",
-    "main.js": "/projects/cinemaUndercover/static/js/main.1ff8c349.js",
+    "main.css": "/projects/cinemaUndercover/static/css/main.0674021a.css",
+    "main.js": "/projects/cinemaUndercover/static/js/main.3e99b110.js",
     "index.html": "/projects/cinemaUndercover/index.html",
-    "main.6f1a0277.css.map": "/projects/cinemaUndercover/static/css/main.6f1a0277.css.map",
-    "main.1ff8c349.js.map": "/projects/cinemaUndercover/static/js/main.1ff8c349.js.map"
+    "main.0674021a.css.map": "/projects/cinemaUndercover/static/css/main.0674021a.css.map",
+    "main.3e99b110.js.map": "/projects/cinemaUndercover/static/js/main.3e99b110.js.map"
   },
   "entrypoints": [
-    "static/css/main.6f1a0277.css",
-    "static/js/main.1ff8c349.js"
+    "static/css/main.0674021a.css",
+    "static/js/main.3e99b110.js"
   ]
 }
